@@ -65,7 +65,6 @@ For local plugin development, install from your local package path after build.
 ## Development
 
 ```bash
-npm install
 npm run lint
 npm test
 npm run build
@@ -114,6 +113,7 @@ This package intentionally keeps runtime coupling conservative:
 - ✅ fully implemented normalization engine,
 - ✅ plugin package scaffold (`openclaw.plugin.json` + `openclaw.extensions` entry),
 - ⚠️ minimal plugin runtime wrapper (no fabricated hook signatures).
+- ✅ zero external runtime/test dependencies (uses Node built-ins for tests).
 
 You can wire `normalizeToolOutput` into concrete OpenClaw runtime hooks once the exact hook interfaces are available in your environment.
 

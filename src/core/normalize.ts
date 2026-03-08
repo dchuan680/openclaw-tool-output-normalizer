@@ -4,11 +4,11 @@ import { normalizeOcr } from "../normalizers/ocr";
 import { normalizeTable } from "../normalizers/table";
 import { normalizeText } from "../normalizers/text";
 import { normalizeWeb } from "../normalizers/web";
-import { DetectedType, NormalizedResult, NormalizerConfig } from "../types";
+import { DetectedType, NormalizedResult, NormalizerConfig, NormalizerFn } from "../types";
 import { detectType } from "../utils/detect";
 import { estimateTokens } from "../utils/tokens";
 
-const NORMALIZER_MAP: Record<DetectedType, typeof normalizeText> = {
+const NORMALIZER_MAP: Record<DetectedType, NormalizerFn> = {
   json: normalizeJson,
   web: normalizeWeb,
   ocr: normalizeOcr,

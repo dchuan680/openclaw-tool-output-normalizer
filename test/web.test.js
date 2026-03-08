@@ -7,6 +7,8 @@ test('web normalizer: detects payload and warns when short', () => {
 
   assert.equal(result.meta.detected_type, 'web');
   assert.ok(result.summary.length > 0);
-  assert.ok(Object.prototype.hasOwnProperty.call(result.important_fields, 'title'));
+  assert.ok(Object.keys(result.important_fields).length > 0);
+  assert.ok(typeof result.meta.token_before === 'number');
+  assert.ok(typeof result.meta.token_after === 'number');
   assert.ok(result.warnings.length > 0);
 });

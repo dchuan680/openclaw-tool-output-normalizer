@@ -2,33 +2,38 @@
 
 A plugin for OpenClaw that converts verbose tool outputs into short, structured, model-friendly summaries.
 
-> 中文简介：这是一个专注于“工具输出归一化”的 OpenClaw 插件，用于压缩噪音、统一结构并降低上下文成本。
+> 中文简介：该项目专注于“工具输出归一化”，将噪音较多、结构不统一的输出压缩成稳定 schema，便于后续模型消费。
 
 ## Why this project
 
-Agent tool outputs are often noisy, inconsistent, and too large for efficient downstream reasoning. This package provides a deterministic local normalization engine (no external LLM dependency) that:
+Tool outputs from crawlers, OCR, APIs, and spreadsheets are often too long and inconsistent. This package offers a deterministic local normalization engine to:
 
-- reduces token footprint,
-- keeps critical fields,
-- standardizes output shape,
-- and surfaces quality warnings.
+- reduce token usage,
+- keep important fields,
+- standardize output format,
+- and surface quality warnings.
 
-## Features
+## What this package does (current scope)
 
-- Unified normalized schema for all supported tool outputs.
-- Automatic type detection (`json`, `web`, `ocr`, `table`, fallback `text`).
-- Dedicated normalizers per data type.
-- Stable token estimation (`token_before`, `token_after`, `reduction_ratio`).
-- Configurable pruning limits and warning behavior.
-- Conservative OpenClaw plugin scaffold + reusable standalone engine.
+- ✅ Standalone normalization engine (`normalizeToolOutput`)
+- ✅ OpenClaw plugin scaffold packaging (`openclaw.plugin.json`, `openclaw.extensions`)
+- ✅ Configurable normalization rules
+- ✅ Local-only implementation (no external LLM APIs)
+
+## What this package does NOT do
+
+- ❌ Automatic interception of all OpenClaw tool calls
+- ❌ Model routing / caching / budget control
+- ❌ SaaS backend, DB, or UI
+- ❌ External online model inference
 
 ## Supported input types
 
-1. Large JSON payloads
-2. Web scraping / browser tool outputs
-3. OCR text outputs
-4. Table / Excel style data
-5. Generic text fallback
+- `json`: large API/object payloads
+- `web`: scraped page outputs (`title/url/content/html/text`)
+- `ocr`: OCR/scan text outputs
+- `table`: two-dimensional rows/columns data
+- `text`: fallback for plain text
 
 ## Output schema
 
@@ -54,25 +59,15 @@ Agent tool outputs are often noisy, inconsistent, and too large for efficient do
 npm install openclaw-tool-output-normalizer
 ```
 
-For OpenClaw plugin installation:
+OpenClaw plugin install (package/distribution scenario):
 
 ```bash
 openclaw plugins install openclaw-tool-output-normalizer
 ```
 
-For local plugin development, install from your local package path after build.
-
-## Development
-
-```bash
-npm run lint
-npm test
-npm run build
-```
-
 ## Usage
 
-### As a standalone engine
+### Standalone engine
 
 ```ts
 import { normalizeToolOutput } from "openclaw-tool-output-normalizer";
@@ -83,55 +78,49 @@ const result = normalizeToolOutput(input, {
 });
 ```
 
-### As plugin scaffold export
+### Plugin scaffold export
 
 ```ts
-import plugin from "openclaw-tool-output-normalizer/dist/plugin";
+import plugin from "openclaw-tool-output-normalizer/plugin";
 
-const normalized = plugin.normalize(toolOutput);
+const result = plugin.normalize(input);
 ```
 
 ## Configuration
 
-`openclaw.plugin.json` defines the plugin `configSchema` and defaults.
+Config is defined in `openclaw.plugin.json` (`configSchema`) and merged with code defaults.
 
-Main config fields:
-
-- `maxStringLength` (default: `500`)
-- `maxArrayItems` (default: `5`)
-- `maxObjectDepth` (default: `4`)
-- `maxExcerptLength` (default: `400`)
-- `enableWarnings` (default: `true`)
-- `preferredImportantFields` (default: `['id','name','title','status']`)
+- `maxStringLength` (default `500`)
+- `maxArrayItems` (default `5`)
+- `maxObjectDepth` (default `4`)
+- `maxExcerptLength` (default `400`)
+- `enableWarnings` (default `true`)
+- `preferredImportantFields` (default `['id','name','title','status']`)
 - `webNoisePatterns` (default includes copyright/navigation patterns)
-- `debug` (default: `false`)
+- `debug` (default `false`)
 
-## OpenClaw runtime note
+## OpenClaw integration note
 
-This package intentionally keeps runtime coupling conservative:
+This version intentionally keeps runtime integration minimal and honest:
 
-- ✅ fully implemented normalization engine,
-- ✅ plugin package scaffold (`openclaw.plugin.json` + `openclaw.extensions` entry),
-- ⚠️ minimal plugin runtime wrapper (no fabricated hook signatures).
-- ✅ zero external runtime/test dependencies (uses Node built-ins for tests).
+- the plugin entry exports metadata + config schema + `normalize` API,
+- `register(api)` does not assume undocumented OpenClaw hook names,
+- deeper runtime interception should be added only when concrete OpenClaw hook signatures are confirmed.
 
-You can wire `normalizeToolOutput` into concrete OpenClaw runtime hooks once the exact hook interfaces are available in your environment.
+## Development
+
+```bash
+npm run lint
+npm test
+npm run build
+```
 
 ## Roadmap
 
-- richer table semantics (column type inference)
-- deterministic scoring for OCR/web quality
-- optional domain-specific field extraction profiles
-- deeper OpenClaw runtime hook adapters when APIs are finalized
-
-## Non-goals
-
-- model routing
-- budget/cost orchestration
-- caching layers
-- SaaS backend/database/UI
-- external LLM API calls
-- automatic hooking into every possible tool ecosystem
+- richer table profiling (column-type hints)
+- stronger OCR/web quality scoring
+- optional domain-specific extraction profiles
+- adapter examples for concrete OpenClaw runtime hook APIs (when publicly stable)
 
 ## License
 

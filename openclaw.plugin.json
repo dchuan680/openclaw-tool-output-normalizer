@@ -6,6 +6,7 @@
   "configSchema": {
     "type": "object",
     "additionalProperties": false,
+    "required": [],
     "properties": {
       "maxStringLength": {
         "type": "integer",
@@ -38,13 +39,17 @@
       },
       "preferredImportantFields": {
         "type": "array",
-        "items": { "type": "string" },
+        "items": {
+          "type": "string"
+        },
         "default": ["id", "name", "title", "status"],
         "description": "Preferred field names to prioritize in important_fields extraction."
       },
       "webNoisePatterns": {
         "type": "array",
-        "items": { "type": "string" },
+        "items": {
+          "type": "string"
+        },
         "default": ["copyright", "all rights reserved", "navigation"],
         "description": "Case-insensitive patterns used to filter noisy web lines."
       },

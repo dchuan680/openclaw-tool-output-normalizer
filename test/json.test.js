@@ -13,5 +13,7 @@ test('json normalizer: detects json and returns compact structure', () => {
   assert.equal(result.meta.detected_type, 'json');
   assert.ok(result.summary.length > 0);
   assert.ok(Object.keys(result.important_fields).length > 0);
+  assert.ok(typeof result.meta.token_before === 'number');
+  assert.ok(typeof result.meta.token_after === 'number');
   assert.ok(result.meta.token_after <= result.meta.token_before);
 });

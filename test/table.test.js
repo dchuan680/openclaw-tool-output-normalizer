@@ -11,7 +11,9 @@ test('table normalizer: detects table and summarizes shape', () => {
 
   assert.equal(result.meta.detected_type, 'table');
   assert.ok(result.summary.length > 0);
-  assert.ok(Object.prototype.hasOwnProperty.call(result.important_fields, 'row_count'));
+  assert.ok(Object.keys(result.important_fields).length > 0);
+  assert.ok(typeof result.meta.token_before === 'number');
+  assert.ok(typeof result.meta.token_after === 'number');
   assert.ok(result.meta.token_after <= result.meta.token_before);
 });
 

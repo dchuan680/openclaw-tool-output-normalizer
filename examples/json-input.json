@@ -1,0 +1,14 @@
+{
+  "id": "order_123",
+  "name": "Sample Order",
+  "status": "pending",
+  "items": [
+    { "sku": "A-1", "qty": 2, "price": 19.5 },
+    { "sku": "B-2", "qty": 1, "price": 39 }
+  ],
+  "message": "This is a large payload from upstream API with nested details.",
+  "details": {
+    "customer": { "name": "Alex", "email": "alex@example.com" },
+    "shipping": { "address": "No.1 Demo Street", "city": "Shanghai" }
+  }
+}

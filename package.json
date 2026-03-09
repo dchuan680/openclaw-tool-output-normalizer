@@ -35,6 +35,9 @@
   "bugs": {
     "url": "https://github.com/openclaw/openclaw-tool-output-normalizer/issues"
   },
+  "publishConfig": {
+    "access": "public"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test test/*.test.js",

@@ -1,5 +1,9 @@
 # openclaw-tool-output-normalizer
 
+[![CI](https://github.com/openclaw/openclaw-tool-output-normalizer/actions/workflows/ci.yml/badge.svg)](https://github.com/openclaw/openclaw-tool-output-normalizer/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/openclaw-tool-output-normalizer.svg)](https://www.npmjs.com/package/openclaw-tool-output-normalizer)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](./LICENSE)
+
 A plugin for OpenClaw that converts verbose tool outputs into short, structured, model-friendly summaries.
 
 > 中文简介：本插件专注于“工具输出归一化”，用于压缩噪音、统一结构、降低 token 成本。
@@ -121,35 +125,35 @@ Config schema is defined in `openclaw.plugin.json` and defaults are implemented 
 
 ```bash
 npm install
-npm run lint
-npm test
 npm run build
+npm test
 ```
 
-## Publishing
+## CI and publishing
 
-Typical release flow:
+- CI workflow: `.github/workflows/ci.yml` (runs `npm ci`, `npm run build`, `npm test` on push/PR).
+- Publish workflow: `.github/workflows/publish.yml` (runs on GitHub Release publish or manual dispatch).
+- Publish job uses npm trusted publishing-friendly permissions (`id-token: write`) and runs:
+  1. `npm ci`
+  2. `npm run build`
+  3. `npm test`
+  4. `npm publish --provenance --access public`
 
-```bash
-npm version patch   # or minor / major
-npm run prepublishOnly
-npm publish
-```
+If trusted publishing is not yet configured for your npm package, you can temporarily fall back to token-based publish in your own environment; trusted publishing remains the recommended default.
 
-`prepublishOnly` runs lint + test to reduce bad publishes.
+## Release process
 
-## Pre-release checklist
+1. Update version and changelog.
+2. Run local checks:
+   ```bash
+   npm run lint
+   npm test
+   npm pack --dry-run
+   ```
+3. Create GitHub Release (e.g. `v0.1.0`) with release notes.
+4. Publishing workflow runs and publishes to npm.
 
-- [ ] `openclaw.plugin.json` exists and is valid JSON
-- [ ] `configSchema` and `src/config/defaults.ts` stay aligned
-- [ ] `npm run build` passes
-- [ ] `npm test` passes
-- [ ] `package.json` has correct `openclaw.extensions` path (`dist/plugin.js`)
-- [ ] `npm pack --dry-run` includes `dist/` and `openclaw.plugin.json`
-- [ ] README commands and examples match current scripts/API
-- [ ] Dependencies do not require postinstall/native build
-- [ ] package `version` is correct for release
-- [ ] local path installation has been smoke-tested
+Detailed checklist: see [`RELEASE_CHECKLIST.md`](./RELEASE_CHECKLIST.md).
 
 ## Security / trust note
 

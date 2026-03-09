@@ -7,8 +7,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/).
 
 ## [0.1.0] - 2026-03-09
 ### Added
-- Initial normalization engine for `json`, `web`, `ocr`, `table`, and `text` fallback.
-- Unified normalized schema with token estimation metadata.
-- OpenClaw plugin package scaffold (`openclaw.plugin.json`, `openclaw.extensions`, plugin entry).
-- Basic Node test coverage for core normalizers.
-- Release-oriented package metadata and contributor docs.
+- Core normalization engine for `json`, `web`, `ocr`, `table`, and `text` fallback.
+- Unified output schema with token estimation metadata.
+- OpenClaw plugin scaffold package (`openclaw.plugin.json`, `openclaw.extensions`, plugin entry).
+- Build/test pipeline with TypeScript + Node test runner.
+- GitHub CI workflow and npm publish workflow (trusted publishing-friendly permissions).
+- Release/project docs: README, CONTRIBUTING, RELEASE_CHECKLIST, release draft notes.

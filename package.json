@@ -20,15 +20,26 @@
     "dist",
     "openclaw.plugin.json",
     "README.md",
-    "LICENSE"
+    "LICENSE",
+    "CHANGELOG.md"
   ],
+  "sideEffects": false,
   "openclaw.extensions": [
     "dist/plugin.js"
   ],
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/openclaw/openclaw-tool-output-normalizer.git"
+  },
+  "homepage": "https://github.com/openclaw/openclaw-tool-output-normalizer#readme",
+  "bugs": {
+    "url": "https://github.com/openclaw/openclaw-tool-output-normalizer/issues"
+  },
   "scripts": {
     "build": "tsc -p tsconfig.json",
     "test": "npm run build && node --test test/*.test.js",
-    "lint": "tsc --noEmit -p tsconfig.json"
+    "lint": "tsc --noEmit -p tsconfig.json",
+    "prepublishOnly": "npm run lint && npm test"
   },
   "keywords": [
     "openclaw",
@@ -40,5 +51,8 @@
   ],
   "engines": {
     "node": ">=18"
+  },
+  "devDependencies": {
+    "typescript": "^5.6.3"
   }
 }

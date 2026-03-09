@@ -2,40 +2,35 @@
 
 A plugin for OpenClaw that converts verbose tool outputs into short, structured, model-friendly summaries.
 
-> 中文简介：该项目专注于“工具输出归一化”，将噪音较多、结构不统一的输出压缩成稳定 schema，便于后续模型消费。
+> 中文简介：本插件专注于“工具输出归一化”，用于压缩噪音、统一结构、降低 token 成本。
 
 ## Why this project
 
-Tool outputs from crawlers, OCR, APIs, and spreadsheets are often too long and inconsistent. This package offers a deterministic local normalization engine to:
+Tool outputs from APIs, crawlers, OCR, and tables are frequently too large and inconsistent for reliable agent workflows. This package provides a deterministic local normalizer so downstream models receive compact, stable, structured data.
 
-- reduce token usage,
-- keep important fields,
-- standardize output format,
-- and surface quality warnings.
+## Current integration scope
 
-## What this package does (current scope)
+This package currently provides:
 
-- ✅ Standalone normalization engine (`normalizeToolOutput`)
-- ✅ OpenClaw plugin scaffold packaging (`openclaw.plugin.json`, `openclaw.extensions`)
-- ✅ Configurable normalization rules
-- ✅ Local-only implementation (no external LLM APIs)
+- ✅ A standalone normalization engine (`normalizeToolOutput`)
+- ✅ A publishable OpenClaw plugin package scaffold (`openclaw.plugin.json` + `openclaw.extensions`)
+- ✅ Minimal and conservative plugin entry (`register(api)` without assuming undocumented hooks)
 
-## What this package does NOT do
+This package does **not** currently provide:
 
-- ❌ Automatic interception of all OpenClaw tool calls
+- ❌ Automatic interception of all OpenClaw tool outputs
 - ❌ Model routing / caching / budget control
-- ❌ SaaS backend, DB, or UI
-- ❌ External online model inference
+- ❌ External LLM API calls
 
 ## Supported input types
 
-- `json`: large API/object payloads
-- `web`: scraped page outputs (`title/url/content/html/text`)
-- `ocr`: OCR/scan text outputs
-- `table`: two-dimensional rows/columns data
-- `text`: fallback for plain text
+- `json` (large object/array payloads)
+- `web` (scrape/browser outputs with `title/url/content/html/text`)
+- `ocr` (OCR or scanned-document text)
+- `table` (2D arrays or `{ headers, rows }` payloads)
+- `text` (fallback)
 
-## Output schema
+## Normalized output schema
 
 ```json
 {
@@ -53,74 +48,118 @@ Tool outputs from crawlers, OCR, APIs, and spreadsheets are often too long and i
 }
 ```
 
-## Installation
+## Install
+
+### 1) Install from npm
 
 ```bash
 npm install openclaw-tool-output-normalizer
-```
-
-OpenClaw plugin install (package/distribution scenario):
-
-```bash
 openclaw plugins install openclaw-tool-output-normalizer
 ```
 
+### 2) Install from local package directory
+
+```bash
+npm run build
+openclaw plugins install /absolute/path/to/openclaw-tool-output-normalizer
+```
+
+### 3) Dev link workflow
+
+```bash
+npm run build
+npm link
+# in the OpenClaw Gateway project/runtime environment
+npm link openclaw-tool-output-normalizer
+```
+
+After plugin install/update, restart the OpenClaw Gateway process so the runtime reloads plugin manifests and extension entries.
+
 ## Usage
 
-### Standalone engine
+### Standalone engine API
 
 ```ts
 import { normalizeToolOutput } from "openclaw-tool-output-normalizer";
 
-const result = normalizeToolOutput(input, {
+const result = normalizeToolOutput(toolOutput, {
   maxArrayItems: 3,
   maxStringLength: 300
 });
 ```
 
-### Plugin scaffold export
+### Plugin scaffold API
 
 ```ts
 import plugin from "openclaw-tool-output-normalizer/plugin";
 
-const result = plugin.normalize(input);
+const normalized = plugin.normalize(toolOutput);
 ```
+
+## How OpenClaw discovers this plugin
+
+This package follows the basic plugin discovery contract:
+
+1. `openclaw.plugin.json` exists in package root.
+2. `openclaw.plugin.json` contains required fields: `id` and `configSchema`.
+3. `package.json` contains `openclaw.extensions` pointing to compiled extension entry: `dist/plugin.js`.
 
 ## Configuration
 
-Config is defined in `openclaw.plugin.json` (`configSchema`) and merged with code defaults.
+Config schema is defined in `openclaw.plugin.json` and defaults are implemented in `src/config/defaults.ts`.
 
-- `maxStringLength` (default `500`)
-- `maxArrayItems` (default `5`)
-- `maxObjectDepth` (default `4`)
-- `maxExcerptLength` (default `400`)
-- `enableWarnings` (default `true`)
-- `preferredImportantFields` (default `['id','name','title','status']`)
-- `webNoisePatterns` (default includes copyright/navigation patterns)
-- `debug` (default `false`)
+- `maxStringLength` (default `500`): truncate long string fields
+- `maxArrayItems` (default `5`): keep N array samples
+- `maxObjectDepth` (default `4`): prune deep nested objects
+- `maxExcerptLength` (default `400`): cap raw excerpt length
+- `enableWarnings` (default `true`): emit warning hints
+- `preferredImportantFields` (default `['id','name','title','status']`): extraction priority
+- `webNoisePatterns` (default includes copyright/navigation markers): web text cleanup
+- `debug` (default `false`): debug-oriented behavior switches
 
-## OpenClaw integration note
-
-This version intentionally keeps runtime integration minimal and honest:
-
-- the plugin entry exports metadata + config schema + `normalize` API,
-- `register(api)` does not assume undocumented OpenClaw hook names,
-- deeper runtime interception should be added only when concrete OpenClaw hook signatures are confirmed.
-
-## Development
+## Local development
 
 ```bash
+npm install
 npm run lint
 npm test
 npm run build
 ```
 
+## Publishing
+
+Typical release flow:
+
+```bash
+npm version patch   # or minor / major
+npm run prepublishOnly
+npm publish
+```
+
+`prepublishOnly` runs lint + test to reduce bad publishes.
+
+## Pre-release checklist
+
+- [ ] `openclaw.plugin.json` exists and is valid JSON
+- [ ] `configSchema` and `src/config/defaults.ts` stay aligned
+- [ ] `npm run build` passes
+- [ ] `npm test` passes
+- [ ] `package.json` has correct `openclaw.extensions` path (`dist/plugin.js`)
+- [ ] `npm pack --dry-run` includes `dist/` and `openclaw.plugin.json`
+- [ ] README commands and examples match current scripts/API
+- [ ] Dependencies do not require postinstall/native build
+- [ ] package `version` is correct for release
+- [ ] local path installation has been smoke-tested
+
+## Security / trust note
+
+OpenClaw plugins run in the Gateway process. Treat plugin code as trusted code and review dependencies carefully. This project intentionally keeps dependencies minimal and pure JS/TS where possible.
+
 ## Roadmap
 
-- richer table profiling (column-type hints)
-- stronger OCR/web quality scoring
-- optional domain-specific extraction profiles
-- adapter examples for concrete OpenClaw runtime hook APIs (when publicly stable)
+- stronger web/OCR quality heuristics
+- richer table profiling
+- optional hook adapters once OpenClaw runtime hook contracts are stable and documented
 
 ## License
 

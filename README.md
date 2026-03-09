@@ -106,7 +106,10 @@ This package follows the basic plugin discovery contract:
 
 1. `openclaw.plugin.json` exists in package root.
 2. `openclaw.plugin.json` contains required fields: `id` and `configSchema`.
-3. `package.json` contains `openclaw.extensions` pointing to compiled extension entry: `dist/plugin.js`.
+3. `package.json` includes plugin entry metadata in both forms for compatibility:
+   - `openclaw.extensions` (top-level key)
+   - `openclaw: { "extensions": [...] }` (nested form)
+   Both point to `./dist/plugin.js`.
 
 ## Configuration
 
@@ -168,3 +171,15 @@ OpenClaw plugins run in the Gateway process. Treat plugin code as trusted code a
 ## License
 
 MIT
+
+
+## Troubleshooting
+
+If install fails with `package.json missing openclaw.extensions`, make sure the package you install is a newly built/published version that includes the `openclaw.extensions` metadata and compiled `dist/` files.
+
+For local installs, run:
+
+```bash
+npm run build
+openclaw plugins install /absolute/path/to/openclaw-tool-output-normalizer
+```

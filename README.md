@@ -109,7 +109,7 @@ This package follows the basic plugin discovery contract:
 3. `package.json` includes plugin entry metadata in both forms for compatibility:
    - `openclaw.extensions` (top-level key)
    - `openclaw: { "extensions": [...] }` (nested form)
-   Both point to `./dist/plugin.js`.
+   Both point to `./dist/openclaw.js` (a CommonJS compatibility entry).
 
 ## Configuration
 

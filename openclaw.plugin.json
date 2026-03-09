@@ -1,0 +1,79 @@
+{
+  "id": "openclaw-tool-output-normalizer",
+  "name": "OpenClaw Tool Output Normalizer",
+  "version": "0.1.0",
+  "description": "Normalize verbose tool outputs into concise, structured, model-friendly summaries.",
+  "configSchema": {
+    "type": "object",
+    "additionalProperties": false,
+    "required": [],
+    "properties": {
+      "maxStringLength": {
+        "type": "integer",
+        "minimum": 50,
+        "default": 500,
+        "description": "Max length for long text fields before truncation."
+      },
+      "maxArrayItems": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 5,
+        "description": "How many array items to keep as representative samples."
+      },
+      "maxObjectDepth": {
+        "type": "integer",
+        "minimum": 1,
+        "default": 4,
+        "description": "Maximum object depth retained in normalized snippets."
+      },
+      "maxExcerptLength": {
+        "type": "integer",
+        "minimum": 80,
+        "default": 400,
+        "description": "Maximum raw excerpt length in final output."
+      },
+      "enableWarnings": {
+        "type": "boolean",
+        "default": true,
+        "description": "Whether normalizers should emit warning hints for low-quality inputs."
+      },
+      "preferredImportantFields": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": ["id", "name", "title", "status"],
+        "description": "Preferred field names to prioritize in important_fields extraction."
+      },
+      "webNoisePatterns": {
+        "type": "array",
+        "items": {
+          "type": "string"
+        },
+        "default": ["copyright", "all rights reserved", "navigation"],
+        "description": "Case-insensitive patterns used to filter noisy web lines."
+      },
+      "debug": {
+        "type": "boolean",
+        "default": false,
+        "description": "Enable debug details in warnings for development."
+      }
+    }
+  },
+  "uiHints": {
+    "groups": [
+      {
+        "title": "Pruning limits",
+        "fields": ["maxStringLength", "maxArrayItems", "maxObjectDepth", "maxExcerptLength"]
+      },
+      {
+        "title": "Extraction preferences",
+        "fields": ["preferredImportantFields", "webNoisePatterns"]
+      },
+      {
+        "title": "Diagnostics",
+        "fields": ["enableWarnings", "debug"]
+      }
+    ]
+  }
+}

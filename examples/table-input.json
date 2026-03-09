@@ -1,0 +1,8 @@
+{
+  "headers": ["name", "department", "salary"],
+  "rows": [
+    ["Alice", "Engineering", 20000],
+    ["Bob", "Operations", 18000],
+    ["Cindy", "Finance", 22000]
+  ]
+}

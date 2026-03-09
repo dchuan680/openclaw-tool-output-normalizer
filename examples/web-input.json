@@ -1,0 +1,5 @@
+{
+  "title": "OpenClaw Plugin Guide",
+  "url": "https://example.com/docs/openclaw-plugin",
+  "content": "Navigation\nHome | Docs | Pricing\n\nOpenClaw plugins let you extend runtime behavior with reusable capabilities.\n\nAll rights reserved.\n\nYou can package plugins as npm modules and install them through the CLI."
+}
